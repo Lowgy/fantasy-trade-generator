@@ -1,22 +1,44 @@
+'use client';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { signOut, useSession } from 'next-auth/react';
+
+function AuthButton() {
+  const { data: session } = useSession();
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/login' });
+  };
+
+  if (session) {
+    return (
+      <div className="flex items-center space-x-4">
+        <span className="text-sm font-medium text-gray-700">
+          {session.user?.name}
+        </span>
+        <Button onClick={handleSignOut} variant="outline" size="sm">
+          Sign out
+        </Button>
+      </div>
+    );
+  }
+}
 
 export default function NavBar() {
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/">
-                <Image
-                  src="/placeholder.svg?height=32&width=32&text=FTP"
-                  alt="FantasyTradePro Logo"
-                  width={32}
-                  height={32}
-                />
-              </Link>
-            </div>
+          <div className="flex items-center">
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <Image
+                src="/placeholder.svg?height=32&width=32&text=FTP"
+                alt="FantasyTradePro Logo"
+                width={32}
+                height={32}
+              />
+            </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/generator"
@@ -31,6 +53,9 @@ export default function NavBar() {
                 Settings
               </Link>
             </div>
+          </div>
+          <div className="flex items-center">
+            <AuthButton />
           </div>
         </div>
       </div>

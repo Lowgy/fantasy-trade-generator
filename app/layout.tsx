@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import { getSession } from 'next-auth/react';
+import SessionProvider from '@/components/session-provider';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
@@ -9,10 +11,17 @@ export const metadata = {
   description: 'AI-powered fantasy football trade generator',
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const session = await getSession();
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <SessionProvider session={session}>{children}</SessionProvider>
+      </body>
     </html>
   );
 }

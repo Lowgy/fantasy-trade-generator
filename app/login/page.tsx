@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,10 +19,27 @@ import Link from 'next/link';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  if (session) {
+    router.push('/generator');
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    // For future use with credentials provider
     console.log('Login attempted with:', { email, password });
+    setIsLoading(false);
+  };
+
+  const handleGoogleSignIn = () => {
+    setIsLoading(true);
+    signIn('google', { callbackUrl: '/generator' });
   };
 
   return (
@@ -31,10 +50,28 @@ export default function LoginPage() {
             Login
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to login to your account
+            Choose your preferred login method
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <Button
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="w-full"
+            variant="outline"
+          >
+            {isLoading ? 'Loading...' : 'Sign in with Google'}
+          </Button>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -72,8 +109,8 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Loading...' : 'Login'}
             </Button>
           </form>
         </CardContent>
