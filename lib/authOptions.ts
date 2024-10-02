@@ -7,15 +7,15 @@ import Google from 'next-auth/providers/google';
 import { JWT } from 'next-auth/jwt';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export const authOptions = {
   providers: [
     Google({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET ?? '',
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
     }),
     Credentials({
       name: 'Credentials',
@@ -48,8 +48,8 @@ export const authOptions = {
     }),
   ],
   adapter: SupabaseAdapter({
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    secret: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+    url: process.env.SUPABASE_URL!,
+    secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   }) as Adapter,
   pages: {
     signIn: '/login',
