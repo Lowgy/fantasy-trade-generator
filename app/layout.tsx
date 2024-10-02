@@ -1,6 +1,4 @@
 import { ReactNode } from 'react';
-import { getSession } from 'next-auth/react';
-import SessionProvider from '@/components/session-provider';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
@@ -16,12 +14,9 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getSession();
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <SessionProvider session={session}>{children}</SessionProvider>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

@@ -2,21 +2,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from '@/app/(main)/session-provider';
+import { logout } from '@/app/(auth)/actions';
 
 function AuthButton() {
-  const { data: session } = useSession();
+  const { user } = useSession();
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/login' });
+    logout();
   };
 
-  if (session) {
+  if (user) {
     return (
       <div className="flex items-center space-x-4">
-        <span className="text-sm font-medium text-gray-700">
-          {session.user?.name}
-        </span>
+        <span className="text-sm font-medium text-gray-700">{user.name}</span>
         <Button onClick={handleSignOut} variant="outline" size="sm">
           Sign out
         </Button>
