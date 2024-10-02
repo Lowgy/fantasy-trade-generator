@@ -46,6 +46,8 @@ export async function login(
       sessionCookie.attributes
     );
 
+    console.log(existingUser.onboarded);
+
     if (existingUser.onboarded) {
       return redirect('/generator');
     } else {

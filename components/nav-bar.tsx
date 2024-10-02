@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useSession } from '@/app/(main)/session-provider';
+import { useSession } from '@/components/session-provider';
 import { logout } from '@/app/(auth)/actions';
 
 function AuthButton() {

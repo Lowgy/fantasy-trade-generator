@@ -55,7 +55,7 @@ export async function signUp(
       sessionCookie.value,
       sessionCookie.attributes
     );
-
+    console.log('redirecting to /login');
     return redirect('/login');
   } catch (error) {
     if (isRedirectError(error)) throw error;

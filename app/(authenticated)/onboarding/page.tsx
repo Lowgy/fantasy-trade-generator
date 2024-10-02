@@ -16,7 +16,7 @@ import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { getSleeperData, updateUserWithLeague } from './actions';
 import { useRouter } from 'next/navigation';
-import { useSession } from '../session-provider';
+import { useSession } from '../../../components/session-provider';
 
 interface SelectionItemProps {
   value: string;
