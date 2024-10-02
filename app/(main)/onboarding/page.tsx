@@ -13,6 +13,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
+import { getSleeperData, updateUserWithLeague } from './actions';
+import { useRouter } from 'next/navigation';
+import { useSession } from '../session-provider';
 
 interface SelectionItemProps {
   value: string;
@@ -38,26 +41,60 @@ const SelectionItem: React.FC<SelectionItemProps> = ({
   </div>
 );
 
-const SleeperLogin = () => {
+interface SleeperLeague {
+  league_id: string;
+  name: string;
+  avatar: string;
+}
+
+const SleeperLogin = ({ userId }: any) => {
   const [username, setUsername] = useState('');
   const [step, setStep] = useState(1);
-  const [availableLeagues, setAvailableLeagues] = useState<string[]>([]);
+  const [error, setError] = useState('');
+  const [availableLeagues, setAvailableLeagues] = useState<SleeperLeague[]>([]);
   const [selectedLeague, setSelectedLeague] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleUsernameSubmit = (e: React.FormEvent) => {
+  const handleUsernameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Sleeper username submitted:', username);
-    setAvailableLeagues(['League 1', 'League 2', 'League 3']);
+    const sleeperData = await getSleeperData(username);
+    if (sleeperData.error) {
+      setError(sleeperData.error);
+      return;
+    }
+    setAvailableLeagues(sleeperData.leagues);
     setStep(2);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError('');
+    setUsername(e.target.value);
   };
 
   const handleLeagueSelect = (league: string) => {
     setSelectedLeague(league);
   };
 
-  const handleLeagueSubmit = (e: React.FormEvent) => {
+  const handleLeagueSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Selected league:', selectedLeague);
+    if (!selectedLeague) return;
+
+    const selectedLeagueData = availableLeagues.find(
+      (league) => league.name === selectedLeague
+    );
+    if (!selectedLeagueData) return;
+
+    try {
+      const result = await updateUserWithLeague(userId, selectedLeagueData);
+
+      if (result.error) {
+        console.error(result.error);
+      } else {
+        router.push('/generator');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
   };
 
   if (step === 1) {
@@ -70,10 +107,11 @@ const SleeperLogin = () => {
             type="text"
             placeholder="Enter your Sleeper username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleInputChange}
             required
           />
         </div>
+        {error && <p className="text-center text-destructive">{error}</p>}
         <Button type="submit" className="w-full" disabled={!username}>
           Next
         </Button>
@@ -88,18 +126,33 @@ const SleeperLogin = () => {
         <div className="space-y-2">
           {availableLeagues.map((league) => (
             <SelectionItem
-              key={league}
-              value={league}
-              selected={selectedLeague === league}
-              onClick={() => handleLeagueSelect(league)}
+              key={league.league_id}
+              value={league.name}
+              selected={selectedLeague === league.name}
+              onClick={() => handleLeagueSelect(league.name)}
             >
-              <span
-                className={`font-medium ${
-                  selectedLeague === league ? 'text-blue-600' : ''
-                }`}
-              >
-                {league}
-              </span>
+              <div className="flex items-center space-x-4 w-full">
+                <div className="w-10 h-10 relative flex-shrink-0">
+                  <Image
+                    src={
+                      league.avatar
+                        ? `https://sleepercdn.com/avatars/${league.avatar}`
+                        : '/sleeper-logo.png'
+                    }
+                    alt={`${league.name} avatar`}
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                </div>
+                <span
+                  className={`font-medium flex-grow ${
+                    selectedLeague === league.name ? 'text-blue-600' : ''
+                  }`}
+                >
+                  {league.name}
+                </span>
+              </div>
             </SelectionItem>
           ))}
         </div>
@@ -113,11 +166,12 @@ const SleeperLogin = () => {
 
 export default function OnboardingPage() {
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const { user: loggedInUser } = useSession();
 
   const renderLoginComponent = () => {
     switch (selectedPlatform) {
       case 'Sleeper':
-        return <SleeperLogin />;
+        return <SleeperLogin userId={loggedInUser.id} />;
       case 'ESPN':
         return (
           <div className="space-y-4">

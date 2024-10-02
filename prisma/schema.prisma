@@ -32,8 +32,10 @@ model User {
 
 model League {
   id String @id
-  userId String
   name String
+  type String
+  avatar String?
+  userId String
   user User @relation(fields: [userId], references: [id])
 
   @@map("leagues")

@@ -46,7 +46,11 @@ export async function login(
       sessionCookie.attributes
     );
 
-    return redirect('/generator');
+    if (existingUser.onboarded) {
+      return redirect('/generator');
+    } else {
+      return redirect('/onboarding');
+    }
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);
