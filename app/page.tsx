@@ -94,9 +94,11 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button className="bg-white text-blue-600 hover:bg-zinc-200">
-                  Start Trading
-                </Button>
+                <Link href="/login">
+                  <Button className="bg-white text-blue-600 hover:bg-zinc-200">
+                    Start Trading
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   className="bg-transparent text-white border-white hover:bg-white hover:text-blue-600"

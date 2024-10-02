@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -32,8 +33,22 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // For future use with credentials provider
-    console.log('Login attempted with:', { email, password });
+    setError('');
+
+    // Attempt sign in with credentials
+    const res = await signIn('credentials', {
+      redirect: false, // Do not automatically redirect
+      email,
+      password,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+      setIsLoading(false);
+    } else if (res?.ok) {
+      // Redirect to the desired page
+      router.push('/generator');
+    }
     setIsLoading(false);
   };
 
@@ -72,6 +87,9 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
+
+          {error && <div className="text-red-500 text-center">{error}</div>}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

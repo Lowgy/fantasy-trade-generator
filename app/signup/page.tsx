@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/card';
 import { UserIcon, MailIcon, LockIcon } from 'lucide-react';
 import Link from 'next/link';
+import { signUp } from '../actions/auth';
+import { useRouter } from 'next/navigation';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -20,18 +22,36 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
-    // Here you would typically handle the signup logic
-    console.log('Signup attempted with:', { name, email, password });
+    try {
+      const result = await signUp(name, email, password);
+      console.log('Signup result:', result);
+      if (result.success) {
+        router.push(
+          '/login?message=Account created successfully. Please log in.'
+        );
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError('An unexpected error occurred during signup');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -120,8 +140,8 @@ export default function SignupPage() {
               </div>
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button type="submit" className="w-full">
-              Sign Up
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Signing up...' : 'Sign Up'}
             </Button>
           </form>
         </CardContent>
