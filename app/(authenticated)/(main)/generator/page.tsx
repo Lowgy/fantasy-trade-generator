@@ -19,7 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getUserLeagues } from './actions';
+import { getUserLeagues } from '../actions';
+import { League } from '@/lib/types';
 import { useSession } from '@/components/session-provider';
 
 const positions = [
@@ -42,14 +43,6 @@ const otherTeamPlayers = [
   { name: 'Chris Taylor', position: 'WR', value: '$12M' },
   { name: 'Olivia White', position: 'TE', value: '$8M' },
 ];
-
-interface League {
-  id: string;
-  name: string;
-  userId: string;
-  avatar: string | null;
-  type: string;
-}
 
 interface Trade {
   id: number;
