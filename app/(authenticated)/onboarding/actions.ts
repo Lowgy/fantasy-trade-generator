@@ -60,6 +60,7 @@ export async function getSleeperLeagues(user_id: string) {
 export async function updateUserWithLeague(userId: string, leagueData: any) {
   try {
     const result = await prisma.$transaction(async (tx) => {
+      // Step 1: Update the user if needed (e.g., onboard flag)
       const updatedUser = await tx.user.update({
         where: { id: userId },
         data: {
@@ -67,17 +68,46 @@ export async function updateUserWithLeague(userId: string, leagueData: any) {
         },
       });
 
-      const newLeague = await tx.league.create({
-        data: {
-          id: leagueData.league_id,
-          name: leagueData.name,
-          type: 'sleeper',
-          avatar: leagueData.avatar,
-          userId: userId,
+      // Step 2: Check if the league already exists
+      const existingLeague = await tx.league.findUnique({
+        where: { id: leagueData.league_id },
+      });
+
+      // Step 3: If the league doesn't exist, create it
+      let league;
+      if (!existingLeague) {
+        league = await tx.league.create({
+          data: {
+            id: leagueData.league_id,
+            name: leagueData.name,
+            type: 'sleeper',
+            avatar: leagueData.avatar,
+          },
+        });
+      } else {
+        league = existingLeague;
+      }
+
+      // Step 4: Check if the user is already associated with the league
+      const existingUserLeague = await tx.userLeague.findUnique({
+        where: {
+          userId_leagueId: { userId, leagueId: league.id },
         },
       });
-      return { user: updatedUser, league: newLeague };
+
+      // Step 5: If the user is not already associated, create the UserLeague link
+      if (!existingUserLeague) {
+        await tx.userLeague.create({
+          data: {
+            userId,
+            leagueId: league.id,
+          },
+        });
+      }
+
+      return { user: updatedUser, league };
     });
+
     return { success: true, data: result };
   } catch (error) {
     console.error('Error updating user with league data:', error);
