@@ -1,0 +1,14 @@
+name: Fetch Sleeper Players
+
+on:
+  schedule:
+    - cron: '0 0 */7 * *'  # This runs every 7 days at midnight UTC
+
+jobs:
+  fetch_players:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel API to fetch players
+        run: |
+          curl -X GET https://fantasy-trade-generator.vercel.app/api/players \
+          -H "X-Cron-Job-Token: ${{ secrets.CRON_JOB_TOKEN }}"
