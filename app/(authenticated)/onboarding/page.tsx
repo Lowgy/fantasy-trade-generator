@@ -54,6 +54,7 @@ const SleeperLogin = ({ userId }: any) => {
   const [error, setError] = useState('');
   const [availableLeagues, setAvailableLeagues] = useState<SleeperLeague[]>([]);
   const [selectedLeague, setSelectedLeague] = useState<string | null>(null);
+  const [sleeperId, setSleeperId] = useState<string | null>(null);
   const router = useRouter();
 
   const handleUsernameSubmit = async (e: React.FormEvent) => {
@@ -63,6 +64,7 @@ const SleeperLogin = ({ userId }: any) => {
       setError(sleeperData.error);
       return;
     }
+    setSleeperId(sleeperData.user.user_id);
     setAvailableLeagues(sleeperData.leagues);
     setStep(2);
   };
@@ -86,7 +88,11 @@ const SleeperLogin = ({ userId }: any) => {
     if (!selectedLeagueData) return;
 
     try {
-      const result = await updateUserWithLeague(userId, selectedLeagueData);
+      const result = await updateUserWithLeague(
+        userId,
+        selectedLeagueData,
+        sleeperId
+      );
 
       if (result.error) {
         console.error(result.error);

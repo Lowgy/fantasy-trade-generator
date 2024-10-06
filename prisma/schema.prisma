@@ -22,13 +22,22 @@ model User {
   onboarded     Boolean      @default(false)
   passwordHash  String?
   googleId      String?      @unique
+  sleeperId     String?      @unique
   leagues       UserLeague[]
-  rosters       Roster[]
   sessions      Session[]
 
   createdAt     DateTime     @default(now())
 
   @@map("users")
+}
+
+model Roster {
+  id        Int      @id
+  ownerId   String  
+  leagueId  String 
+  players   String[] 
+
+  @@map("rosters")
 }
 
 model League {
@@ -37,7 +46,6 @@ model League {
   type          String
   avatar        String?
   users         UserLeague[]
-  rosters       Roster[]
 
   @@map("leagues")
 }
@@ -54,37 +62,13 @@ model UserLeague {
   @@map("user_leagues")
 }
 
-model Roster {
-  id        String   @id
-  userId    String
-  leagueId  String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  league    League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
-  players   RosterPlayer[]
-
-  @@map("rosters")
-}
-
 model Player {
   playerId    String @unique @id
   firstName   String
   lastName    String
   position    String
-  rosters     RosterPlayer[]
 
   @@map("players")
-}
-
-model RosterPlayer {
-  id        String  @id @default(cuid())
-  rosterId  String
-  playerId  String
-  roster    Roster  @relation(fields: [rosterId], references: [id], onDelete: Cascade)
-  player    Player  @relation(fields: [playerId], references: [playerId], onDelete: Cascade)
-
-  @@unique([rosterId, playerId])
-
-  @@map("roster_players")
 }
 
 model Session {

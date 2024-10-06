@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     const playersData: Record<string, PlayerData> = await response.json();
 
     // Define the positions you want to include
-    const allowedPositions = new Set(['QB', 'WR', 'RB', 'TE', 'DEF']); // Adjust the positions as needed
+    const allowedPositions = new Set(['QB', 'WR', 'RB', 'TE', 'DEF', 'K']); // Adjust the positions as needed
 
     // Filter and create an array of upsert promises for each player based on their position
     const playerPromises = Object.entries(playersData)
