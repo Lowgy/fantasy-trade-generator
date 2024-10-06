@@ -31,13 +31,15 @@ model User {
   @@map("users")
 }
 
-model Roster {
+model Team {
   id        Int      @id
   ownerId   String  
-  leagueId  String 
+  leagueId  String
+  teamName  String
+  avatar    String? 
   players   String[] 
 
-  @@map("rosters")
+  @@map("teams")
 }
 
 model League {

@@ -86,20 +86,28 @@ export async function updateUserWithLeague(
         },
       }));
 
-    const leagueRosters = await getLeagueRosters(leagueData.league_id);
+    const leagueTeams = await getLeagueTeams(leagueData.league_id);
+
     await Promise.all(
-      leagueRosters.map(async (roster: any) => {
-        const existingRoster = await prisma.roster.findUnique({
-          where: { id: roster.roster_id },
+      leagueTeams.map(async (team: any) => {
+        if (!team.roster_id || !team.owner_id || !team.league_id) {
+          console.warn('Missing team properties:', team);
+          return;
+        }
+
+        const existingTeam = await prisma.team.findUnique({
+          where: { id: team.roster_id },
         });
 
-        if (!existingRoster) {
-          await prisma.roster.create({
+        if (!existingTeam) {
+          await prisma.team.create({
             data: {
-              id: roster.roster_id,
-              ownerId: roster.owner_id,
+              id: team.roster_id,
+              ownerId: team.owner_id,
               leagueId: league.id,
-              players: roster.players,
+              players: team.players,
+              teamName: team.teamName || `Team ${team.display_name}`,
+              avatar: team.avatar,
             },
           });
         }
@@ -128,9 +136,9 @@ export async function updateUserWithLeague(
   }
 }
 
-export async function getLeagueRosters(leagueId: string) {
+export async function getLeagueTeams(leagueId: string) {
   try {
-    const response = await fetch(
+    const rostersResponse = await fetch(
       `https://api.sleeper.app/v1/league/${leagueId}/rosters`,
       {
         method: 'GET',
@@ -139,13 +147,33 @@ export async function getLeagueRosters(leagueId: string) {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (!rostersResponse.ok) {
+      throw new Error(`HTTP error! status: ${rostersResponse.status}`);
     }
-
-    const rosters = await response.json();
-    return rosters;
+    const teamsInfoResponse = await fetch(
+      `https://api.sleeper.app/v1/league/${leagueId}/users`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!teamsInfoResponse.ok) {
+      throw new Error(`HTTP error! status: ${teamsInfoResponse.status}`);
+    }
+    const teams = await teamsInfoResponse.json();
+    const rosters = await rostersResponse.json();
+    const fullTeamsInfo = [];
+    for (let i = 0; i < teams.length; i++) {
+      const team = teams[i];
+      team.teamName = team.metadata.team_name;
+      const roster = rosters.find((r: any) => r.owner_id === team.user_id);
+      if (roster) {
+        fullTeamsInfo.push({ ...team, ...roster });
+      }
+    }
+    return fullTeamsInfo;
   } catch (error) {
     console.error('Error in getLeagueRosters:', error);
     throw error;
