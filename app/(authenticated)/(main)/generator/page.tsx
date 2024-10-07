@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getUserLeagues } from '../actions';
+import { getUserLeagues, getUsersTeam, getLeagueTeams } from '../actions';
 import { League } from '@/lib/types';
 import { useSession } from '@/components/session-provider';
 
@@ -30,25 +30,13 @@ const positions = [
   { id: 4, name: 'TE' },
 ];
 
-const myTeamPlayers = [
-  { name: 'John Doe', position: 'QB', value: '$20M' },
-  { name: 'Jane Smith', position: 'RB', value: '$15M' },
-  { name: 'Mike Johnson', position: 'WR', value: '$10M' },
-  { name: 'Sarah Brown', position: 'TE', value: '$5M' },
-];
-
-const otherTeamPlayers = [
-  { name: 'Alex Wilson', position: 'QB', value: '$18M' },
-  { name: 'Emma Davis', position: 'RB', value: '$22M' },
-  { name: 'Chris Taylor', position: 'WR', value: '$12M' },
-  { name: 'Olivia White', position: 'TE', value: '$8M' },
-];
-
 interface Trade {
   id: number;
   league: string;
-  myTeamPlayers: { name: string; position: string; value: string }[];
-  otherTeamPlayers: { name: string; position: string; value: string }[];
+  myTeamName: string;
+  otherTeamName: string;
+  myTeamPlayers: { name: string; position: string; id: string }[];
+  otherTeamPlayers: { name: string; position: string; id: string }[];
   timestamp: string;
 }
 
@@ -60,12 +48,23 @@ interface TradeHistory {
   timestamp: string;
 }
 
+interface Team {
+  id: number;
+  leagueId: string;
+  avatar: string | null;
+  ownerId: string;
+  teamName: string;
+  players: string[];
+}
+
 export default function DashboardGeneratorPage() {
   const [leagues, setLeagues] = useState<League[]>([]);
-  const [selectedLeague, setSelectedLeague] = useState('');
+  const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
   const [selectedPosition, setSelectedPosition] = useState('');
   const [generatedTrades, setGeneratedTrades] = useState<Trade[]>([]);
   const [tradeHistory, setTradeHistory] = useState<TradeHistory[]>([]);
+  const [userTeam, setUserTeam] = useState<Team | null>(null);
+  const [leagueTeams, setLeagueTeams] = useState<Team[]>([]);
   const { user } = useSession();
 
   useEffect(() => {
@@ -76,33 +75,57 @@ export default function DashboardGeneratorPage() {
     fetchLeagues();
   }, [user.id]);
 
-  const generateTrade = (): Trade => {
-    const getRandomPlayers = (players: typeof myTeamPlayers, count: number) => {
-      return players
-        .filter((player) => player.position === selectedPosition)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, count);
-    };
+  useEffect(() => {
+    async function fetchTeams() {
+      if (!selectedLeague) {
+        return;
+      }
+      console.log('Fetching teams...');
+      console.log(user);
+      console.log(user.id);
+      console.log(user.sleeperId);
+      const usersTeam = await getUsersTeam(
+        user.sleeperId || '',
+        selectedLeague.id
+      );
+      console.log(usersTeam);
+      const leagueTeams = await getLeagueTeams(selectedLeague.id);
+      console.log(leagueTeams);
+      setUserTeam(usersTeam);
+      setLeagueTeams(leagueTeams);
+    }
 
-    return {
-      id: Date.now() + Math.random(),
-      league: selectedLeague,
-      myTeamPlayers: getRandomPlayers(myTeamPlayers, 2),
-      otherTeamPlayers: getRandomPlayers(otherTeamPlayers, 2),
-      timestamp: new Date().toLocaleString(),
-    };
-  };
+    if (selectedLeague) {
+      fetchTeams();
+    }
+  }, [selectedLeague, user.id, user.sleeperId]);
 
-  const handleGenerateTrades = () => {
-    const newTrades = Array(3)
-      .fill(null)
-      .map(() => generateTrade());
-    setGeneratedTrades((prevTrades) => [...newTrades, ...prevTrades]);
-
+  const handleGenerateTrades = async () => {
+    if (!selectedLeague) {
+      return;
+    }
+    console.log('Generating trades...');
+    if (!userTeam || !leagueTeams.length) {
+      return;
+    }
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({
+        userTeam,
+        leagueTeams,
+        selectedPosition,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response);
+    const data = await response.json();
+    setGeneratedTrades(data.trades);
     setTradeHistory((prevHistory) => [
       {
         id: Date.now(),
-        league: selectedLeague,
+        league: selectedLeague.name,
         position: selectedPosition,
         count: 3,
         timestamp: new Date().toLocaleString(),
@@ -110,7 +133,7 @@ export default function DashboardGeneratorPage() {
       ...prevHistory,
     ]);
 
-    setSelectedLeague('');
+    setSelectedLeague(null);
     setSelectedPosition('');
   };
 
@@ -124,13 +147,18 @@ export default function DashboardGeneratorPage() {
               <CardTitle>Generate Trades</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Select onValueChange={setSelectedLeague} value={selectedLeague}>
+              <Select
+                onValueChange={(value) =>
+                  setSelectedLeague(leagues.find((l) => l.id === value) || null)
+                }
+                value={selectedLeague?.id || ''}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a league" />
                 </SelectTrigger>
                 <SelectContent>
                   {leagues.map((league) => (
-                    <SelectItem key={league.id} value={league.name}>
+                    <SelectItem key={league.id} value={league.id}>
                       <div className="flex items-center">
                         <Image
                           src={
@@ -186,23 +214,44 @@ export default function DashboardGeneratorPage() {
                       key={trade.id}
                       className="p-4 bg-white rounded-md shadow"
                     >
-                      <div className="font-bold mb-2">
-                        {trade.league} - {trade.myTeamPlayers[0].position}
-                      </div>
                       <div className="space-y-2">
                         <div>
-                          <h4 className="font-semibold">Your Team Offers:</h4>
+                          <h4 className="font-semibold">
+                            {trade.myTeamName} Offers:
+                          </h4>
                           {trade.myTeamPlayers.map((player, index) => (
-                            <div key={index}>
-                              {player.name} ({player.value})
+                            <div className="flex items-center" key={index}>
+                              <Image
+                                src={
+                                  `https://sleepercdn.com/content/nfl/players/${player.id}.jpg` ||
+                                  '/sleeper-logo.png'
+                                }
+                                alt={`${player.name} headshot`}
+                                width={80}
+                                height={80}
+                                className="mr-2 rounded-full"
+                              />
+                              {player.name}
                             </div>
                           ))}
                         </div>
                         <div>
-                          <h4 className="font-semibold">Other Team Offers:</h4>
+                          <h4 className="font-semibold">
+                            {trade.otherTeamName} Offers:
+                          </h4>
                           {trade.otherTeamPlayers.map((player, index) => (
-                            <div key={index}>
-                              {player.name} ({player.value})
+                            <div className="flex items-center" key={index}>
+                              <Image
+                                src={
+                                  `https://sleepercdn.com/content/nfl/players/${player.id}.jpg` ||
+                                  '/sleeper-logo.png'
+                                }
+                                alt={`${player.name} headshot`}
+                                width={80}
+                                height={80}
+                                className="mr-2 rounded-full"
+                              />
+                              {player.name}
                             </div>
                           ))}
                         </div>

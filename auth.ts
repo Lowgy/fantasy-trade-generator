@@ -20,6 +20,7 @@ export const lucia = new Lucia(adapter, {
       onboarded: databaseUserAttributes.onboarded,
       email: databaseUserAttributes.email,
       googleId: databaseUserAttributes.googleId,
+      sleeperId: databaseUserAttributes.sleeperId,
     };
   },
 });
@@ -37,6 +38,7 @@ interface DatabaseUserAttributes {
   onboarded: boolean;
   email: string | null;
   googleId: string | null;
+  sleeperId: string | null;
 }
 
 export const validateRequest = cache(
