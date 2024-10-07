@@ -107,6 +107,7 @@ export default function SettingsPage() {
                           value={platform}
                           id={platform}
                           className="peer sr-only"
+                          disabled={platform == 'Yahoo' || platform == 'ESPN'}
                         />
                         <Label
                           htmlFor={platform}
@@ -121,7 +122,11 @@ export default function SettingsPage() {
                                 height={48}
                               />
                             </div>
-                            <span>{platform}</span>
+                            <span>
+                              {platform}{' '}
+                              {(platform == 'Yahoo' || platform == 'ESPN') &&
+                                '(Coming Soon)'}
+                            </span>
                           </div>
                           <ArrowRight className="text-gray-400 peer-checked:text-blue dark:peer-checked:text-light-blue" />
                         </Label>

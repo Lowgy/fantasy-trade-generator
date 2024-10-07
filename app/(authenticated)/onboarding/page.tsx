@@ -23,20 +23,22 @@ interface SelectionItemProps {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  disabled?: boolean;
 }
 
 const SelectionItem: React.FC<SelectionItemProps> = ({
   selected,
   onClick,
   children,
+  disabled,
 }) => (
   <div
-    onClick={onClick}
-    className={`flex items-center justify-between w-full p-4 bg-white border-2 rounded-lg cursor-pointer transition-all ${
+    onClick={disabled ? undefined : onClick}
+    className={`flex items-center justify-between w-full p-4 bg-lighter-charcoal border-2 rounded-lg transition-all ${
       selected
-        ? 'border-blue-600 bg-blue-50'
-        : 'border-gray-200 hover:bg-gray-50'
-    }`}
+        ? 'border-light-blue bg-blue/10'
+        : 'border-darker-gray hover:bg-dark-charcoal'
+    } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
   >
     {children}
   </div>
@@ -108,7 +110,9 @@ const SleeperLogin = ({ userId }: any) => {
     return (
       <form onSubmit={handleUsernameSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="sleeper-username">Sleeper Username</Label>
+          <Label htmlFor="sleeper-username" className="text-almost-white">
+            Sleeper Username
+          </Label>
           <Input
             id="sleeper-username"
             type="text"
@@ -116,10 +120,15 @@ const SleeperLogin = ({ userId }: any) => {
             value={username}
             onChange={handleInputChange}
             required
+            className="bg-dark-charcoal text-almost-white border-darker-gray focus:border-light-blue"
           />
         </div>
-        {error && <p className="text-center text-destructive">{error}</p>}
-        <Button type="submit" className="w-full" disabled={!username}>
+        {error && <p className="text-center text-red">{error}</p>}
+        <Button
+          type="submit"
+          className="w-full bg-light-blue text-dark-charcoal hover:bg-light-blue/90"
+          disabled={!username}
+        >
           Next
         </Button>
       </form>
@@ -129,7 +138,7 @@ const SleeperLogin = ({ userId }: any) => {
   return (
     <form onSubmit={handleLeagueSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label>Select Your League</Label>
+        <Label className="text-almost-white">Select Your League</Label>
         <div className="space-y-2">
           {availableLeagues.map((league) => (
             <SelectionItem
@@ -154,7 +163,9 @@ const SleeperLogin = ({ userId }: any) => {
                 </div>
                 <span
                   className={`font-medium flex-grow ${
-                    selectedLeague === league.name ? 'text-blue-600' : ''
+                    selectedLeague === league.name
+                      ? 'text-light-blue'
+                      : 'text-almost-white'
                   }`}
                 >
                   {league.name}
@@ -164,7 +175,11 @@ const SleeperLogin = ({ userId }: any) => {
           ))}
         </div>
       </div>
-      <Button type="submit" className="w-full" disabled={!selectedLeague}>
+      <Button
+        type="submit"
+        className="w-full bg-light-blue text-dark-charcoal hover:bg-light-blue/90"
+        disabled={!selectedLeague}
+      >
         Connect Sleeper Account
       </Button>
     </form>
@@ -182,7 +197,7 @@ export default function OnboardingPage() {
       case 'ESPN':
         return (
           <div className="space-y-4">
-            <p>
+            <p className="text-almost-white">
               To connect your ESPN account, you&apos;ll need to log in through
               ESPN&apos;s website.
             </p>
@@ -190,7 +205,7 @@ export default function OnboardingPage() {
               onClick={() =>
                 window.open('https://www.espn.com/fantasy/', '_blank')
               }
-              className="w-full"
+              className="w-full bg-light-blue text-dark-charcoal hover:bg-light-blue/90"
             >
               Go to ESPN Fantasy
             </Button>
@@ -199,7 +214,7 @@ export default function OnboardingPage() {
       case 'Yahoo':
         return (
           <div className="space-y-4">
-            <p>
+            <p className="text-almost-white">
               To connect your Yahoo account, you&apos;ll need to log in through
               Yahoo&apos;s website.
             </p>
@@ -210,7 +225,7 @@ export default function OnboardingPage() {
                   '_blank'
                 )
               }
-              className="w-full"
+              className="w-full bg-light-blue text-dark-charcoal hover:bg-light-blue/90"
             >
               Go to Yahoo Fantasy
             </Button>
@@ -222,25 +237,25 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-dark-charcoal p-4">
+      <Card className="w-full max-w-lg bg-lighter-charcoal border-darker-gray">
         <CardHeader className="space-y-1">
           {selectedPlatform && (
             <Button
               variant="ghost"
-              className="p-0 h-8 w-8 absolute left-4 top-4"
+              className="p-0 h-8 w-8 absolute left-4 top-4 text-almost-white hover:text-light-blue"
               onClick={() => setSelectedPlatform(null)}
               aria-label="Back to platform selection"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
           )}
-          <CardTitle className="text-2xl font-bold text-center">
+          <CardTitle className="text-2xl font-bold text-center text-almost-white">
             {selectedPlatform
               ? `Connect ${selectedPlatform} Account`
               : 'Connect Your Fantasy League'}
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-light-gray-dark">
             {selectedPlatform
               ? `Follow the steps to connect your ${selectedPlatform} account`
               : 'Choose your fantasy football platform and connect your account'}
@@ -257,6 +272,7 @@ export default function OnboardingPage() {
                   value={platform}
                   selected={selectedPlatform === platform}
                   onClick={() => setSelectedPlatform(platform)}
+                  disabled={platform === 'ESPN' || platform === 'Yahoo'}
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 relative">
@@ -269,10 +285,14 @@ export default function OnboardingPage() {
                     </div>
                     <span
                       className={`font-medium ${
-                        selectedPlatform === platform ? 'text-blue-600' : ''
+                        selectedPlatform === platform
+                          ? 'text-light-blue'
+                          : 'text-almost-white'
                       }`}
                     >
                       {platform}
+                      {(platform === 'Yahoo' || platform === 'ESPN') &&
+                        ' (Coming Soon)'}
                     </span>
                   </div>
                 </SelectionItem>
