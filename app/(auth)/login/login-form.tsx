@@ -44,27 +44,29 @@ export default function LoginForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {error && <p className="text-center text-destructive">{error}</p>}
+        {error && <p className="text-center text-red dark:text-red">{error}</p>}
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-dark-gray dark:text-almost-white">
+                Email
+              </FormLabel>
               <FormControl>
                 <div className="relative">
                   <MailIcon
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray dark:text-light-gray-dark"
                     size={20}
                   />
                   <Input
                     placeholder="m@example.com"
                     {...field}
-                    className="pl-10"
+                    className="pl-10 bg-light-gray dark:bg-dark-charcoal text-dark-gray dark:text-almost-white border-divider-light dark:border-darker-gray focus:ring-2 focus:ring-blue dark:focus:ring-light-blue"
                   />
                 </div>
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red dark:text-red" />
             </FormItem>
           )}
         />
@@ -73,15 +75,25 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className="text-dark-gray dark:text-almost-white">
+                Password
+              </FormLabel>
               <FormControl>
-                <PasswordInput placeholder="Password" {...field} />
+                <PasswordInput
+                  placeholder="Password"
+                  {...field}
+                  className="bg-light-gray dark:bg-dark-charcoal text-dark-gray dark:text-almost-white border-divider-light dark:border-darker-gray focus:ring-2 focus:ring-blue dark:focus:ring-light-blue"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red dark:text-red" />
             </FormItem>
           )}
         />
-        <LoadingButton type="submit" className="w-full" loading={isPending}>
+        <LoadingButton
+          type="submit"
+          className="w-full bg-blue text-white hover:bg-blue/90 dark:bg-light-blue dark:text-dark-charcoal dark:hover:bg-light-blue/90"
+          loading={isPending}
+        >
           Login
         </LoadingButton>
       </form>

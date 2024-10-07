@@ -138,13 +138,15 @@ export default function DashboardGeneratorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen p-4 bg-light-gray dark:bg-dark-charcoal text-dark-gray dark:text-almost-white">
       <div className="max-w-full mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Trade Generator Card */}
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 bg-white dark:bg-lighter-charcoal border-divider-light dark:border-darker-gray">
             <CardHeader>
-              <CardTitle>Generate Trades</CardTitle>
+              <CardTitle className="text-dark-gray dark:text-almost-white">
+                Generate Trades
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Select
@@ -153,7 +155,7 @@ export default function DashboardGeneratorPage() {
                 }
                 value={selectedLeague?.id || ''}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-divider-light dark:border-darker-gray text-dark-gray dark:text-almost-white">
                   <SelectValue placeholder="Choose a league" />
                 </SelectTrigger>
                 <SelectContent>
@@ -180,7 +182,7 @@ export default function DashboardGeneratorPage() {
                 onValueChange={setSelectedPosition}
                 value={selectedPosition}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-divider-light dark:border-darker-gray text-dark-gray dark:text-almost-white">
                   <SelectValue placeholder="Choose a position" />
                 </SelectTrigger>
                 <SelectContent>
@@ -194,7 +196,7 @@ export default function DashboardGeneratorPage() {
               <Button
                 onClick={handleGenerateTrades}
                 disabled={!selectedLeague || !selectedPosition}
-                className="w-full"
+                className="w-full bg-blue text-white hover:bg-blue/90 dark:bg-light-blue dark:text-dark-charcoal dark:hover:bg-light-blue/90"
               >
                 Generate Trades
               </Button>
@@ -202,9 +204,11 @@ export default function DashboardGeneratorPage() {
           </Card>
 
           {/* Recently Generated Trades Card */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 bg-white dark:bg-lighter-charcoal border-divider-light dark:border-darker-gray">
             <CardHeader>
-              <CardTitle>Generated Trades</CardTitle>
+              <CardTitle className="text-dark-gray dark:text-almost-white">
+                Generated Trades
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {generatedTrades.length > 0 ? (
@@ -212,11 +216,11 @@ export default function DashboardGeneratorPage() {
                   {generatedTrades.slice(0, 6).map((trade) => (
                     <li
                       key={trade.id}
-                      className="p-4 bg-white rounded-md shadow"
+                      className="p-4 bg-light-gray dark:bg-dark-charcoal rounded-md shadow border border-divider-light dark:border-darker-gray"
                     >
                       <div className="space-y-2">
                         <div>
-                          <h4 className="font-semibold">
+                          <h4 className="font-semibold text-dark-gray dark:text-almost-white">
                             {trade.myTeamName} Offers:
                           </h4>
                           {trade.myTeamPlayers.map((player, index) => (
@@ -231,12 +235,14 @@ export default function DashboardGeneratorPage() {
                                 height={80}
                                 className="mr-2 rounded-full"
                               />
-                              {player.name}
+                              <span className="text-gray dark:text-light-gray-dark">
+                                {player.name}
+                              </span>
                             </div>
                           ))}
                         </div>
                         <div>
-                          <h4 className="font-semibold">
+                          <h4 className="font-semibold text-dark-gray dark:text-almost-white">
                             {trade.otherTeamName} Offers:
                           </h4>
                           {trade.otherTeamPlayers.map((player, index) => (
@@ -251,7 +257,9 @@ export default function DashboardGeneratorPage() {
                                 height={80}
                                 className="mr-2 rounded-full"
                               />
-                              {player.name}
+                              <span className="text-gray dark:text-light-gray-dark">
+                                {player.name}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -260,7 +268,7 @@ export default function DashboardGeneratorPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-500">
+                <p className="text-gray dark:text-light-gray-dark">
                   No trades generated yet. Use the form to generate trades.
                 </p>
               )}
@@ -268,36 +276,57 @@ export default function DashboardGeneratorPage() {
           </Card>
 
           {/* Trade History Card */}
-          <Card className="lg:col-span-3">
+          <Card className="lg:col-span-3 bg-white dark:bg-lighter-charcoal border-divider-light dark:border-darker-gray">
             <CardHeader>
-              <CardTitle>Trade Generation History</CardTitle>
+              <CardTitle className="text-dark-gray dark:text-almost-white">
+                Trade Generation History
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {tradeHistory.length > 0 ? (
                 <div className="max-h-[300px] overflow-y-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>League</TableHead>
-                        <TableHead>Position</TableHead>
-                        <TableHead>Trades Generated</TableHead>
-                        <TableHead>Timestamp</TableHead>
+                      <TableRow className="border-b border-divider-light dark:border-darker-gray">
+                        <TableHead className="text-gray dark:text-light-gray-dark">
+                          League
+                        </TableHead>
+                        <TableHead className="text-gray dark:text-light-gray-dark">
+                          Position
+                        </TableHead>
+                        <TableHead className="text-gray dark:text-light-gray-dark">
+                          Trades Generated
+                        </TableHead>
+                        <TableHead className="text-gray dark:text-light-gray-dark">
+                          Timestamp
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {tradeHistory.map((history) => (
-                        <TableRow key={history.id}>
-                          <TableCell>{history.league}</TableCell>
-                          <TableCell>{history.position}</TableCell>
-                          <TableCell>{history.count}</TableCell>
-                          <TableCell>{history.timestamp}</TableCell>
+                        <TableRow
+                          key={history.id}
+                          className="border-b border-divider-light dark:border-darker-gray"
+                        >
+                          <TableCell className="text-dark-gray dark:text-almost-white">
+                            {history.league}
+                          </TableCell>
+                          <TableCell className="text-dark-gray dark:text-almost-white">
+                            {history.position}
+                          </TableCell>
+                          <TableCell className="text-dark-gray dark:text-almost-white">
+                            {history.count}
+                          </TableCell>
+                          <TableCell className="text-dark-gray dark:text-almost-white">
+                            {history.timestamp}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
               ) : (
-                <p className="text-gray-500">
+                <p className="text-gray dark:text-light-gray-dark">
                   No trade history available. Generate trades to see them here.
                 </p>
               )}

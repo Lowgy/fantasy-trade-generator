@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { validateRequest } from '@/auth';
 import SessionProvider from '@/components/session-provider';
 import { redirect } from 'next/navigation';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export default async function AuthenticatedLayout({
   children,
@@ -14,8 +15,10 @@ export default async function AuthenticatedLayout({
   }
 
   return (
-    <SessionProvider value={session}>
-      <div className="min-h-screen bg-gray-100">{children}</div>
-    </SessionProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <SessionProvider value={session}>
+        <div className="min-h-screen bg-background">{children}</div>
+      </SessionProvider>
+    </ThemeProvider>
   );
 }
