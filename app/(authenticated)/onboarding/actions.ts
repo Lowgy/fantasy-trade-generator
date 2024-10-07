@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 import prisma from '@/lib/prisma';
+import { lucia } from '@/auth';
+import { cookies } from 'next/headers';
 
 export async function getSleeperData(username: string) {
   try {
@@ -70,6 +72,18 @@ export async function updateUserWithLeague(
         sleeperId,
       },
     });
+
+    if (!updatedUser.email) {
+      return { error: 'Failed to update user with league data' };
+    }
+
+    const session = await lucia.createSession(updatedUser.id, {});
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    cookies().set(
+      sessionCookie.name,
+      sessionCookie.value,
+      sessionCookie.attributes
+    );
 
     const existingLeague = await prisma.league.findUnique({
       where: { id: leagueData.league_id },
