@@ -69,6 +69,8 @@ model Player {
   firstName   String
   lastName    String
   position    String
+  value_1qb   Float?
+  value_2qb   Float?
 
   @@map("players")
 }

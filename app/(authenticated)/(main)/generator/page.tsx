@@ -21,7 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getUserLeagues, getUsersTeam, getLeagueTeams } from '../actions';
-import { League } from '@/lib/types';
+import { League, Trade } from '@/lib/types';
 import { useSession } from '@/components/session-provider';
 
 const positions = [
@@ -30,16 +30,6 @@ const positions = [
   { id: 3, name: 'WR' },
   { id: 4, name: 'TE' },
 ];
-
-interface Trade {
-  id: number;
-  league: string;
-  myTeamName: string;
-  otherTeamName: string;
-  myTeamPlayers: { name: string; position: string; id: string }[];
-  otherTeamPlayers: { name: string; position: string; id: string }[];
-  timestamp: string;
-}
 
 interface TradeHistory {
   id: number;
@@ -81,17 +71,11 @@ export default function DashboardGeneratorPage() {
       if (!selectedLeague) {
         return;
       }
-      console.log('Fetching teams...');
-      console.log(user);
-      console.log(user.id);
-      console.log(user.sleeperId);
       const usersTeam = await getUsersTeam(
         user.sleeperId || '',
         selectedLeague.id
       );
-      console.log(usersTeam);
       const leagueTeams = await getLeagueTeams(selectedLeague.id);
-      console.log(leagueTeams);
       setUserTeam(usersTeam);
       setLeagueTeams(leagueTeams);
     }
@@ -120,7 +104,6 @@ export default function DashboardGeneratorPage() {
         'Content-Type': 'application/json',
       },
     });
-    console.log(response);
     const data = await response.json();
     setGeneratedTrades(data.trades);
     setTradeHistory((prevHistory) => [

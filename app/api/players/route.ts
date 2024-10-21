@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { PlayerData } from '@/lib/types';
+import valuesData from '../../data/values.json';
 
 export async function GET(req: Request) {
   const cronJobToken = req.headers.get('X-Cron-Job-Token');
@@ -25,6 +26,18 @@ export async function GET(req: Request) {
 
     const playersData: Record<string, PlayerData> = await response.json();
 
+    for (const player of Object.values(playersData)) {
+      const valueData = valuesData.find(
+        (value: { player: string; value_1qb: number; value_2qb: number }) =>
+          value.player === player.first_name + ' ' + player.last_name
+      );
+
+      if (valueData) {
+        player.value_1qb = valueData.value_1qb;
+        player.value_2qb = valueData.value_2qb;
+      }
+    }
+
     // Define the positions you want to include
     const allowedPositions = new Set(['QB', 'WR', 'RB', 'TE', 'DEF', 'K']); // Adjust the positions as needed
 
@@ -39,11 +52,15 @@ export async function GET(req: Request) {
             firstName: player.first_name,
             lastName: player.last_name,
             position: player.position,
+            value_1qb: player.value_1qb,
+            value_2qb: player.value_2qb,
           },
           update: {
             firstName: player.first_name,
             lastName: player.last_name,
             position: player.position,
+            value_1qb: player.value_1qb,
+            value_2qb: player.value_2qb,
           },
         })
       );

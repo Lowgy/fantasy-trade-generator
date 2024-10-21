@@ -27,8 +27,20 @@ interface Trade {
   league: string;
   myTeamName: string; // Include team name
   otherTeamName: string; // Include team name
-  myTeamPlayers: { name: string; position: string; id: string }[]; // Include player ID in the players array
-  otherTeamPlayers: { name: string; position: string; id: string }[]; // Include player ID in the players array
+  myTeamPlayers: {
+    name: string;
+    position: string;
+    id: string;
+    value_1qb: number | null;
+    value_2qb: number | null;
+  }[]; // Include player ID in the players array
+  otherTeamPlayers: {
+    name: string;
+    position: string;
+    id: string;
+    value_1qb: number | null;
+    value_2qb: number | null;
+  }[]; // Include player ID in the players array
   timestamp: string;
 }
 
@@ -48,6 +60,8 @@ export async function POST(request: Request) {
         firstName: true,
         lastName: true,
         position: true,
+        value_1qb: true,
+        value_2qb: true,
       },
     });
 
@@ -90,6 +104,8 @@ export async function POST(request: Request) {
                 {
                   name: `${myPlayer.firstName} ${myPlayer.lastName}`,
                   position: myPlayer.position,
+                  value_1qb: myPlayer.value_1qb,
+                  value_2qb: myPlayer.value_2qb,
                   id: myPlayerId,
                 },
               ],
@@ -97,6 +113,8 @@ export async function POST(request: Request) {
                 {
                   name: `${otherPlayer.firstName} ${otherPlayer.lastName}`,
                   position: otherPlayer.position,
+                  value_1qb: otherPlayer.value_1qb,
+                  value_2qb: otherPlayer.value_2qb,
                   id: otherPlayerId,
                 },
               ],
