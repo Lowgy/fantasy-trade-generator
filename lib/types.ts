@@ -8,6 +8,7 @@ export interface League {
 export interface PlayerData {
   id: string;
   player_id: string;
+  name: string;
   first_name: string;
   last_name: string;
   position: string;
@@ -20,19 +21,7 @@ export interface Trade {
   league: string;
   myTeamName: string;
   otherTeamName: string;
-  myTeamPlayers: {
-    name: string;
-    position: string;
-    id: string;
-    value_1qb: number | null;
-    value_2qb: number | null;
-  }[];
-  otherTeamPlayers: {
-    name: string;
-    position: string;
-    id: string;
-    value_1qb: number | null;
-    value_2qb: number | null;
-  }[];
+  myTeamPlayers: PlayerData[];
+  otherTeamPlayers: PlayerData[];
   timestamp: string;
 }
