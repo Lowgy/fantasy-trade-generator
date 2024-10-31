@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fantasy Football Trade Generator
 
-## Getting Started
+A dynamic tool for fantasy football enthusiasts to generate trade proposals tailored to their league's player data and user preferences. The goal is to facilitate trade suggestions that align with users' specific needs, such as strengthening certain positions.
 
-First, run the development server:
+### Current Status: 🚧 Ongoing Development 🚧
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This project is actively under development. Key functionalities are being built and tested. Contributions and suggestions are welcome as we build towards a more feature-rich, optimized trade generator!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Overview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The **Fantasy Football Trade Generator** allows users to:
+- Connect their Sleeper fantasy football account.
+- Sync league data to retrieve information on teams, rosters, and players.
+- Generate trade proposals based on the user’s specified position needs and team deficiencies.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This application is designed to streamline the trade process, enabling users to explore possible trade options and simulate proposals before making decisions within their fantasy leagues.
 
-## Deploy on Vercel
+## Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Currently Implemented
+- **Sleeper Account Connection**: Users can link their Sleeper account and sync their league data.
+- **League and Roster Syncing**: Upon connecting an account, the tool retrieves and stores roster data for all teams in the league.
+- **Trade Proposal Generation**: Users can input position preferences, and the generator will suggest trades with other teams in the league.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### In Progress
+- **Player Valuation**: Determining player values to make more balanced trade proposals.
+- **UI Enhancements**: Improving the front-end for a smoother user experience.
+
+## Tech Stack
+
+- **Frontend**: Next.js, Zustand for state management, Axios for HTTP requests.
+- **Backend**: Django, Django REST Framework, PostgreSQL, Prisma ORM.
+- **APIs**: 
+  - Sleeper API for fantasy league data.
+  - Custom endpoints for trade generation and user account management.
+- **Deployment**: Vercel for hosting.
