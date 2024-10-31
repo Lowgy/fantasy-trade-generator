@@ -4,7 +4,7 @@ A dynamic tool for fantasy football enthusiasts to generate trade proposals tail
 
 ### Current Status: 🚧 Ongoing Development 🚧
 
-This project is actively under development. Key functionalities are being built and tested. Contributions and suggestions are welcome as we build towards a more feature-rich, optimized trade generator!
+This project is actively under development.
 
 ---
 
