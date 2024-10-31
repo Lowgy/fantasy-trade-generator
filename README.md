@@ -38,8 +38,8 @@ This application is designed to streamline the trade process, enabling users to 
 
 ## Tech Stack
 
-- **Frontend**: Next.js, Zustand for state management, Axios for HTTP requests.
-- **Backend**: Django, Django REST Framework, PostgreSQL, Prisma ORM.
+- **Frontend**: Next.js, Axios for HTTP requests.
+- **Backend**: PostgreSQL, Prisma ORM.
 - **APIs**: 
   - Sleeper API for fantasy league data.
   - Custom endpoints for trade generation and user account management.
